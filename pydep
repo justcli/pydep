@@ -12,17 +12,22 @@ def usage():
           "     To list the source file names as well:\n"
           "     > pydep -v <pyfile1> ...\n")
 
-def list_recursive(root, skip=None):
-    files = []
+
+flatlist = []
+def list_recursive(root):
+    global flatlist
     root = os.path.abspath(root)
     for item in os.listdir(root):
-        full_path = os.path.join(root, item)
+        full_path = os.path.join(root, item).strip()
         if os.path.isdir(full_path):
-            list_recursive(full_path, skip)
+            fls = list_recursive(full_path)
+            if fls:
+                flatlist += fls
         else:
-            if skip not in full_path and full_path.endswith('.py'):
-                files.append(full_path)
-    return files
+            if full_path.endswith('.py')\
+                    and '.' not in os.path.dirname(full_path):
+                flatlist.append(full_path)
+
 
 alldeps = {}
 filelist = sys.argv[1:]
@@ -36,17 +41,17 @@ except IndexError:
     usage()
     exit(1)
 
-allfiles = []
 for name in filelist:
     if os.path.isdir(name):
-        subfiles = list_recursive(name, skip='.git')
-        if subfiles:
-            allfiles += subfiles
+        list_recursive(name)
     else:
-        allfiles += name
+        flatlist.append(name)
 
-for srcfile in allfiles:
+for srcfile in flatlist:
     with open(srcfile, 'r') as fp:
+        if sys.stdout.isatty():
+            print(f"\u001b[1000D\u001b[0K{srcfile}\u001b[0m", end='')
+            sys.stdout.flush()
         alldeps[srcfile] = []
         while line := fp.readline():
             # The line could be...
@@ -57,6 +62,7 @@ for srcfile in allfiles:
             # from a.b...xyz import foo
             line = line.strip()
             if ('import' in line
+                    and (line.startswith('import') or line.startswith('from'))
                     and '"' not in line
                     and '\'' not in line):
                 code = 'python3 -c "' + line.strip() + '"'
@@ -70,6 +76,7 @@ for srcfile in allfiles:
                     modname = words[1].split('.')[-1:][0].strip()
                     alldeps[srcfile].append(modname)
 
+print("\u001b[1000D\u001b[0K\u001b[0m", end='')
 if verbose:
     lengths = []
     for f in alldeps:
