@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+import sys
+import os
+import subprocess
+
+alldeps = {}
+
+def usage():
+    print("Usage:\n"
+          "     To list all missing depencies:\n"
+          "     > pydep <pyfile1> ...\n"
+          "     To list the source file names as well:\n"
+          "     > pydep -v <pyfile1> ...\n")
+
+def list_recursive(root, skip=None):
+    files = []
+    root = os.path.abspath(root)
+    for item in os.listdir(root):
+        full_path = os.path.join(root, item)
+        if os.path.isdir(full_path):
+            list_recursive(full_path, skip)
+        else:
+            if skip not in full_path and full_path.endswith('.py'):
+                files.append(full_path)
+    return files
+
+alldeps = {}
+filelist = sys.argv[1:]
+verbose = False
+try:
+    if sys.argv[1] == '-v':
+        verbose = True
+        sys.argv[2]
+        filelist = sys.argv[2:]
+except IndexError:
+    usage()
+    exit(1)
+
+allfiles = []
+for name in filelist:
+    if os.path.isdir(name):
+        subfiles = list_recursive(name, skip='.git')
+        if subfiles:
+            allfiles += subfiles
+    else:
+        allfiles += name
+
+for srcfile in allfiles:
+    with open(srcfile, 'r') as fp:
+        alldeps[srcfile] = []
+        while line := fp.readline():
+            # The line could be...
+            # import xyz
+            # or 
+            # from xyz import foo
+            # or
+            # from a.b...xyz import foo
+            line = line.strip()
+            if ('import' in line
+                    and '"' not in line
+                    and '\'' not in line):
+                code = 'python3 -c "' + line.strip() + '"'
+                p = subprocess.Popen(code, shell=True,
+                                     stdin=None,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
+                p.communicate()
+                if p.returncode:
+                    words = line.split(' ')
+                    modname = words[1].split('.')[-1:][0].strip()
+                    alldeps[srcfile].append(modname)
+
+if verbose:
+    lengths = []
+    for f in alldeps:
+        modules = alldeps[f]
+        lengths += list(map(lambda s:len(s), modules))
+    ln = max(lengths)
+
+for f in alldeps:
+    modules = alldeps[f]
+    for m in modules:
+        if verbose:
+            print(f"{m.ljust(ln, ' ')}   {f}")
+        else:
+            print(f"{m}")
+
+exit(0)
