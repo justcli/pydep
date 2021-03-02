@@ -24,6 +24,7 @@ For detailed listing, you may use -v option
 > pydep -v .
 > pydep -v a.py b.py
 ```
+Note that pydep automatically filters out non-python files.
 
 ## Using pydep to install all dependencies of your software on a new server/machine
 The output of pydep is machine friendly. It can be pipes to commands like 'pip3 install...' or some other command to install
