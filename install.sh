@@ -10,7 +10,7 @@ pyexe=`which python`
 if [ $ver -ne 3 ]; then
 	which python3 1>/dev/null 2>&1
 	if [ $? -ne 0 ];then
-		echo "Could find any python3 installation."
+		echo "Could not find any python3 installation."
 		exit 1
 	fi
 	pyexe=`which python3`
