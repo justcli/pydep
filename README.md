@@ -1,6 +1,6 @@
 # pydep
 
-pydep is a tool to list all you missing dependencies. You can use it to automate missing module installation as well.
+pydep is a tool to list all missing dependencies of your codebase. You can use it to automate missing module installation as well.
 
 ## Install
 To install pydep, clone the repo and run the install script
