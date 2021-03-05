@@ -53,7 +53,8 @@ for srcfile in flatlist:
             print(f"\u001b[1000D\u001b[0K{srcfile}\u001b[0m", end='')
             sys.stdout.flush()
         alldeps[srcfile] = []
-        while line := fp.readline():
+        line = fp.readline()
+        while line:
             # The line could be...
             # import xyz
             # or 
@@ -75,8 +76,9 @@ for srcfile in flatlist:
                     words = line.split(' ')
                     modname = words[1].split('.')[-1:][0].strip()
                     alldeps[srcfile].append(modname)
-
-print("\u001b[1000D\u001b[0K\u001b[0m", end='')
+            line = fp.readline()
+if sys.stdout.isatty():
+    print("\u001b[1000D\u001b[0K\u001b[0m", end='')
 if verbose:
     lengths = []
     for f in alldeps:
