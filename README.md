@@ -28,5 +28,5 @@ For detailed listing, you may use -v option
 Note that pydep filters out all . folder like .git, .venv etc.
 
 ## Using pydep to install all dependencies of your software on a new server/machine
-The output of pydep is machine friendly. It can be pipes to commands like 'pip3 install...' or some other command to install
+The output of pydep is machine friendly. It can be piped to commands like 'pip3 install...' or some other command to install
 the modules.
