@@ -83,7 +83,8 @@ for srcfile in flatlist:
                         if toskip in modname:
                             break
 
-                    if toskip not in modname: 
+                    if toskip not in modname\
+                            and modname not in alldeps[srcfile]: 
                         alldeps[srcfile].append(modname)
             line = fp.readline()
 if sys.stdout.isatty():
