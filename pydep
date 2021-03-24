@@ -31,12 +31,16 @@ def list_recursive(root):
 
 alldeps = {}
 filelist = sys.argv[1:]
+skip = ''
 verbose = False
 try:
     if sys.argv[1] == '-v':
         verbose = True
         sys.argv[2]
         filelist = sys.argv[2:]
+    if sys.argv[1] == '-x':
+        skip = sys.argv[2].split(',')
+        filelist = sys.argv[3:]
 except IndexError:
     usage()
     exit(1)
@@ -75,7 +79,8 @@ for srcfile in flatlist:
                 if p.returncode:
                     words = line.split(' ')
                     modname = words[1].split('.')[-1:][0].strip()
-                    alldeps[srcfile].append(modname)
+                    if modname not in skip:
+                        alldeps[srcfile].append(modname)
             line = fp.readline()
 if sys.stdout.isatty():
     print("\u001b[1000D\u001b[0K\u001b[0m", end='')
