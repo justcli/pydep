@@ -38,6 +38,7 @@ try:
         verbose = True
         sys.argv[2]
         filelist = sys.argv[2:]
+        sys.argv.remove(sys.argv[1])
     if sys.argv[1] == '-x':
         skip = sys.argv[2].split(',')
         filelist = sys.argv[3:]
@@ -91,10 +92,12 @@ if sys.stdout.isatty():
     print("\u001b[1000D\u001b[0K\u001b[0m", end='')
 if verbose:
     lengths = []
+    ln = 0
     for f in alldeps:
         modules = alldeps[f]
         lengths += list(map(lambda s:len(s), modules))
-    ln = max(lengths)
+    if lengths:
+        ln = max(lengths)
 
 for f in alldeps:
     modules = alldeps[f]
