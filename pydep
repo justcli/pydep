@@ -79,8 +79,9 @@ for srcfile in flatlist:
                 if p.returncode:
                     words = line.split(' ')
                     modname = words[1].split('.')[-1:][0].strip()
-                    if modname not in skip:
-                        alldeps[srcfile].append(modname)
+                    for toskip in skip:
+                        if toskip not in modname:
+                            alldeps[srcfile].append(modname)
             line = fp.readline()
 if sys.stdout.isatty():
     print("\u001b[1000D\u001b[0K\u001b[0m", end='')
