@@ -9,6 +9,12 @@ def usage():
     print("Usage:\n"
           "     To list all missing depencies:\n"
           "     > pydep <pyfile1> ...\n"
+          "\n"
+          "     To list all missing depencies except some:\n"
+          "     > pydep -x modul1,mod2 <pyfile1> ...\n"
+          "       e.g. pydep -x redis,lib *.py to list all missing dependencies.\n"
+          "       The list would skip all modules with name containing redis or lib\n"
+          "\n"
           "     To list the source file names as well:\n"
           "     > pydep -v <pyfile1> ...\n")
 
