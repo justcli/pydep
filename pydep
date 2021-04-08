@@ -86,13 +86,13 @@ for srcfile in flatlist:
                 if p.returncode:
                     words = line.split(' ')
                     modname = words[1].split('.')[-1:][0].strip()
+                    found = False
                     for toskip in skip:
                         if toskip in modname:
+                            found = True
                             break
-
-                        if toskip not in modname\
-                                and modname not in alldeps[srcfile]: 
-                            alldeps[srcfile].append(modname)
+                    if not found and modname not in alldeps[srcfile]: 
+                        alldeps[srcfile].append(modname)
             line = fp.readline()
 if sys.stdout.isatty():
     print("\u001b[1000D\u001b[0K\u001b[0m", end='')
@@ -105,12 +105,15 @@ if verbose:
     if lengths:
         ln = max(lengths)
 
+reported = []
 for f in alldeps:
     modules = alldeps[f]
     for m in modules:
         if verbose:
             print(f"{m.ljust(ln, ' ')}   {f}")
         else:
-            print(f"{m}")
+            if m not in reported:
+                reported.append(m)
+                print(f"{m}")
 
 exit(0)
