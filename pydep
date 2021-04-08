@@ -90,9 +90,9 @@ for srcfile in flatlist:
                         if toskip in modname:
                             break
 
-                    if toskip not in modname\
-                            and modname not in alldeps[srcfile]: 
-                        alldeps[srcfile].append(modname)
+                        if toskip not in modname\
+                                and modname not in alldeps[srcfile]: 
+                            alldeps[srcfile].append(modname)
             line = fp.readline()
 if sys.stdout.isatty():
     print("\u001b[1000D\u001b[0K\u001b[0m", end='')
